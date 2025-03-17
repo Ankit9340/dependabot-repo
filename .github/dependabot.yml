@@ -7,14 +7,9 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 5
 
-  # # 2️⃣ **GitHub Actions**
-  # - package-ecosystem: "github-actions"
-  #   directory: "/.github/workflows"
-  #   schedule:
-  #     interval: "weekly"
-
   # 3️⃣ **Docker**
   - package-ecosystem: "docker"
     directory: "/" 
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    open-pull-requests-limit: 5
