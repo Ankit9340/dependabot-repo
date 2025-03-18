@@ -1,24 +1,29 @@
 trigger:
-  - main  # Change to your branch
+  - main  # Runs on commits to the 'main' branch
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-  - checkout: self  # Clone your repo
-  - task: CodeQLInitialize@0
-    inputs:
-      language: 'javascript'  # Change based on your code (csharp, python, etc.)
+  - checkout: self  # Clones the repository
+
+  - script: |
+      echo "Installing CodeQL..."
+      mkdir -p $HOME/codeql
+      curl -Lo $HOME/codeql/codeql.zip https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip
+      unzip $HOME/codeql/codeql.zip -d $HOME/codeql
+      echo "CodeQL installed successfully."
+    displayName: 'Install CodeQL CLI'
 
   - script: |
       echo "Running CodeQL Analysis..."
-    displayName: 'Run CodeQL'
-
-  - task: CodeQLAnalyze@0
-    inputs:
-      outputFile: 'codeql-results.sarif'
+      $HOME/codeql/codeql/codeql database create codeql-db --language=javascript --source-root .
+      $HOME/codeql/codeql/codeql database analyze codeql-db --format=sarifv2.1.0 --output=codeql-results.sarif
+      echo "CodeQL analysis completed."
+    displayName: 'Run CodeQL Scan'
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: 'codeql-results.sarif'
       artifactName: 'SAST-Report'
+    displayName: 'Upload CodeQL Scan Report'
