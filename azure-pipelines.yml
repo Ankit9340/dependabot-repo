@@ -1,0 +1,24 @@
+trigger:
+  - main  # Change to your branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self  # Clone your repo
+  - task: CodeQLInitialize@0
+    inputs:
+      language: 'javascript'  # Change based on your code (csharp, python, etc.)
+
+  - script: |
+      echo "Running CodeQL Analysis..."
+    displayName: 'Run CodeQL'
+
+  - task: CodeQLAnalyze@0
+    inputs:
+      outputFile: 'codeql-results.sarif'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'codeql-results.sarif'
+      artifactName: 'SAST-Report'
