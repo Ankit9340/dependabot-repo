@@ -1,0 +1,59 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security_scan:
+    name: Snyk Dependency Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Change based on your project
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Test
+        run: snyk test --all-projects || true  # Prevents pipeline failure due to vulnerabilities
+
+      - name: Monitor Project in Snyk
+        run: snyk monitor --all-projects || true
+
+  docker_scan:
+    name: Snyk Docker Image Scan
+    runs-on: ubuntu-latest
+    if: ${{ always() }}  # Ensures this runs even if other jobs fail
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Build Docker Image
+        run: docker build -t my-mern-app .
+
+      - name: Scan Docker Image
+        run: snyk container test my-mern-app || true
