@@ -22,7 +22,7 @@
     "moment-timezone": "^0.5.45",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.1",
-    "react-big-calendar": "^1.8.1",
+    "react-big-calendar": "^1.18.0",
     "react-clock": "^4.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-csv": "^2.2.2",
